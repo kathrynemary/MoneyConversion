@@ -66,6 +66,26 @@ class Money < Minitest::Test
 		assert_equal y, x
 	end
 
+	def test_five_plus_five_dollars_is_ten
+		x = USADollars.new(5)
+		y = USADollars.new(10)
+		assert_equal x.plus(x), y
+	end
+
+	# def test_five_plus_five_francs_is_ten
+	# 	x = SwissFrancs.new(5)
+	# 	y = SwissFrancs.new(10)
+	# 	assert_equal x.plus(x), y
+	# end
+
+	# def test_five_dollars_plus_ten_francs_is_ten_dollars
+	# 	x = USADollars.new(5)
+	# 	y = SwissFrancs.new(10)
+	# 	z = USADollars.new(10)
+	# 	assert_equal x.plus(y), z
+	# end
+
+
 
 end
 
@@ -76,8 +96,10 @@ end
 #equal object (??)
 #common times
 #compare francs with dollars (??)
-#refactor "times" method
+#refactor "times" methods
+#$5 + 10francs is $10
 
-
+#test bank, build it out to be better
+#then go back to the other methods
 
 
