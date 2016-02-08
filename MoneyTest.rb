@@ -85,32 +85,33 @@ class Money < Minitest::Test
 		assert_equal x.plus(y), z
 	end
 
+	def test_ten_francs_plus_five_dollars_is_twenty_francs
+		x = USADollars.new(5)
+		y = SwissFrancs.new(10)
+		z = SwissFrancs.new(20)
+		assert_equal y.plus(x), z
+	end
+
+	def test_2_dollars_times_4_francs_is_4_dollars
+		x = USADollars.new(2)
+		y = SwissFrancs.new(4)
+		z = USADollars.new(4)
+		assert_equal x.times(y), z
+	end
+
 end
 
-# class Banking < Minitest::Test
+class Banking < Minitest::Test
 
-# 	def test_1_dollar_is_2_francs
-# 	    x = Bank.new(1)
-# 	    y = SwissFrancs.new(2)
-# 	    assert_equal x, y
-# 	end
+	def test_output_is_in_francs
+		x = Bank.new.dollars_to_francs(5)
+		y = SwissFrancs.new(10)
+		assert_equal x, y
+	end
 
+	#is it bad that the functionality of Bank is being tested w/i Money?
 
-# 	def test_ten_francs_is_five_dollars
-# 		x = USADollars.new(5)
-# 		y = SwissFrancs.new(10)
-# 		assert_equal x, y
-# 	end
-
-
-	#output is correct amt
-	#output is in correct currency
-	#compares amts correctly
-	#take $1 and get 2 CHF
-	#take 2 CHF and get $1
-
-	#add them together, divide, subtract, multiply
-# end
+end
 
 
 
@@ -123,6 +124,8 @@ end
 #compare francs with dollars (??)
 #refactor "times" methods
 #$5 + 10francs is $10
+#make it work with noninteger dollars
+#add them together, divide, subtract, multiply
 
 #test bank, build it out to be better
 #then go back to the other methods
