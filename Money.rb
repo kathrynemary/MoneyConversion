@@ -13,26 +13,50 @@ class Currencies
     end
 
     def plus(other)
-    	# converted = Bank.new.convert_to(other, self.class)
         if abbreviation == other.abbreviation
     	    self.class.new(@amt + other.to_i)
-    	elsif abbreviation == "$" && other.abbreviation == "CHF"
-			self.class.new(Bank.new.dollars_to_francs(@amt)).plus(other.to_i)
-		elsif abbreviation == "CHF" && other.abbreviation == "$"
-			Bank.new.francs_to_dollars(@amt) + other.to_i
-		end
+    	else
+    		x = Bank.new.convert_money(self, other)
+    		self.class.new(@amt + x.to_i)
+    	end
     end
 
 	def ==(other)
 		if abbreviation == other.abbreviation
 			@amt == other.to_i
 		elsif abbreviation == "$" && other.abbreviation == "CHF"
-			Bank.new.dollars_to_francs(@amt) == other.to_i
+			(@amt * 2) == other.to_i
 		elsif abbreviation == "CHF" && other.abbreviation == "$"
-			Bank.new.francs_to_dollars(@amt) == other.to_i
+			(@amt / 2) == other.to_i
 		end
 	end
 
+end
+
+
+class Bank
+
+    def convert_money(amt, second)
+    	if amt.abbreviation == "CHF" && second.abbreviation == "$"
+    		x = dollars_to_francs(second)
+    		#puts "I now have #{x} francs instead of #{amt} dollars."
+    		USADollars.new(x)
+    	elsif amt.abbreviation == "$" && second.abbreviation == "CHF"
+    		x = francs_to_dollars(second)
+    		#puts "I now have #{x} dollars instead of #{amt} francs."
+    		SwissFrancs.new(x)
+    	end
+    end
+
+	def dollars_to_francs(x)
+		2 * x.to_i
+	end
+
+	def francs_to_dollars(x)
+		#puts "I start with #{x.to_i} and then I get #{x.to_i / 2}"
+		(x.to_i / 2)
+
+	end
 
 end
 
@@ -46,19 +70,6 @@ end
 class SwissFrancs < Currencies
 	def abbreviation
 		"CHF"
-	end
-
-end
-
-
-class Bank
-
-	def dollars_to_francs(x)
-		2 * x
-	end
-
-	def francs_to_dollars(x)
-		x / 2
 	end
 
 end
