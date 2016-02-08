@@ -38,12 +38,6 @@ class Money < Minitest::Test
 		assert_equal x, y
 	end
 
-	def test_four_francs_is_not_four_dollars
-		x = USADollars.new(4)
-		y = SwissFrancs.new(4)
-		refute_equal x, y
-	end
-
 	def test_dollars_are_currency
 		x = USADollars.new(3)
 		assert_kind_of Currencies, x
@@ -52,18 +46,6 @@ class Money < Minitest::Test
 	def test_francs_are_currency
 		x = SwissFrancs.new(3)
 		assert_kind_of Currencies, x
-	end
-
-	def test_ten_francs_is_five_dollars
-		x = USADollars.new(5)
-		y = SwissFrancs.new(10)
-		assert_equal x, y
-	end
-
-	def test_five_dollars_is_ten_francs
-		x = USADollars.new(5)
-		y = SwissFrancs.new(10)
-		assert_equal y, x
 	end
 
 	def test_five_plus_five_dollars_is_ten
@@ -78,11 +60,39 @@ class Money < Minitest::Test
 		assert_equal x.plus(x), y
 	end
 
+end
+
+class Banking < Minitest::Test
+
+	def test_converts_correctly_to_francs
+		x = Bank.new.dollars_to_francs(5)
+		y = SwissFrancs.new(10)
+		assert_equal x, y
+	end
+
+	def test_ten_francs_is_five_dollars
+		x = USADollars.new(5)
+		y = SwissFrancs.new(10)
+		assert_equal x, y
+	end
+
+	def test_five_dollars_is_ten_francs
+		x = USADollars.new(5)
+		y = SwissFrancs.new(10)
+		assert_equal y, x
+	end
+
 	def test_five_dollars_plus_ten_francs_is_ten_dollars
 		x = USADollars.new(5)
 		y = SwissFrancs.new(10)
 		z = USADollars.new(10)
 		assert_equal x.plus(y), z
+	end
+
+	def test_four_francs_is_not_four_dollars
+		x = USADollars.new(4)
+		y = SwissFrancs.new(4)
+		refute_equal x, y
 	end
 
 	def test_ten_francs_plus_five_dollars_is_twenty_francs
@@ -101,33 +111,10 @@ class Money < Minitest::Test
 
 end
 
-class Banking < Minitest::Test
-
-	def test_output_is_in_francs
-		x = Bank.new.dollars_to_francs(5)
-		y = SwissFrancs.new(10)
-		assert_equal x, y
-	end
-
-	#is it bad that the functionality of Bank is being tested w/i Money?
-
-end
-
-
-
-#Tests to pass, in general:
 #money rounding?
+#make it work with noninteger dollars
 #hashCode (??)
 #equal null
 #equal object (??)
-#common times
-#compare francs with dollars (??)
-#refactor "times" methods
-#$5 + 10francs is $10
-#make it work with noninteger dollars
-#add them together, divide, subtract, multiply
-
-#test bank, build it out to be better
-#then go back to the other methods
-
+#divide, subtract
 
