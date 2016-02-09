@@ -1,24 +1,7 @@
 class Currencies
 
 	def initialize(amt)
-		if amt.class == Fixnum
-		    @amt = amt
-	    elsif amt.class == Float
-	    	amt = pennies(amt)
-	    	@amt = amt
-	    	self.flag
-
-	    end
-	end
-
-	def flag
-		puts "I have flagged this test on #{@amt}."
-		"Penny"
-	end
-
-	def pennies(number)
-		number *= 100
-	    number.to_i
+		@amt = (amt * 100)
 	end
 
     def to_i
@@ -26,6 +9,10 @@ class Currencies
     end
 
    	def ==(other)
+
+   		a = Bank.new.pennies_to_dollars(@amt)
+   		b = Bank.new.pennies_to_dollars(other.to_i)
+
 		if abbreviation == other.abbreviation
 			@amt == other.to_i
 		elsif abbreviation == "$" && other.abbreviation == "CHF"
@@ -34,44 +21,58 @@ class Currencies
 			(@amt / 2) == other.to_i
 		end
 
-		if self.flag
-			puts "This amount is in pennies!"
-		end
+		
 	end
 
     def plus(other)
-        if other.class == Float
+        if other.class == Fixnum || other.class == Float
+        	#puts "I am adding #{other}, which is #{other * 100} pennies!"
         	other *= 100
-        	x = @amt + other.to_i
-    		self.class.new(x / 100)
-        elsif other.class == Fixnum || abbreviation == other.abbreviation
-    	    self.class.new(@amt + other.to_i)
+    		self.class.new((@amt + other) / 100 )
+    		#puts "Now I have #{((@amt + other) / 100 )} pennies!"
+        elsif abbreviation == other.abbreviation
+    	    self.class.new((@amt + other.to_i) / 100)
     	else
     		x = Bank.new.convert_money(self, other)
-    		self.class.new(@amt + x.to_i)
+    		#puts "add #{@amt} and #{x.to_i} together."
+    		y = x.to_i / 100
+    		self.class.new((@amt + y) / 100)
     	end
     end
 
     def minus(other)
-        if other.class == Fixnum || abbreviation == other.abbreviation
+        if other.class == Fixnum || other.class == Float
+        	other *= 100
+        	self.class.new((@amt - other) / 100)
+        elsif abbreviation == other.abbreviation
     	    self.class.new(@amt - other.to_i)
     	else
     		x = Bank.new.convert_money(self, other)
-    		self.class.new(@amt - x.to_i)
+    		#puts "subtract #{x.to_i / 100} from #{@amt}."
+    		y = x.to_i / 100
+    		self.class.new((@amt - y) / 100)
     	end
     end
 
     def times(multiplier)
-    	if multiplier.class == Fixnum || abbreviation == multiplier.abbreviation #this looks bad but i had my reasons! namely not wanting to create 2 multiplication methods.
+    	#puts "multiply #{@amt} times #{multiplier.to_i}, which has a class of #{multiplier.class}."
+    	#puts "#{multiplier.class} is the class of the multiplier and #{multiplier.to_i} is the amount, times #{@amt}."
+    	if multiplier.class == Fixnum || multiplier.class == Float
+    		x = multiplier * 100
+    		self.class.new((@amt * x) / 10000)
+    	elsif abbreviation == multiplier.abbreviation
     	    self.class.new(@amt * multiplier.to_i)
     	else
     		x = Bank.new.convert_money(self, multiplier)
-    	    self.class.new(@amt * x.to_i)
+    	    self.class.new((@amt * x.to_i) / 1000000)
     	end
     end
 
     def dividedby(divisor)
-    	if divisor.class == Fixnum || abbreviation == divisor.abbreviation
+    	if divisor.class == Fixnum || divisor.class == Float
+    		divisor *= 100
+    		self.class.new(@amt / divisor)
+    	elsif abbreviation == divisor.abbreviation
     	    self.class.new(@amt / divisor.to_i)
     	else
     		x = Bank.new.convert_money(self, divisor)
@@ -110,8 +111,27 @@ class Bank
 
 	def francs_to_dollars(x)
 		y = (x.to_i / 2)
-		USADollars.new(y)
+		z = USADollars.new(y)
+		return z
+		#puts "Now I have #{y} dollars of #{}"
 	end
+
+
+	def pennies_to_dollars(amt)
+		x = amt.to_s
+        if x.include?(".")
+        	x.sub!(/\.\d*/, '')
+        end
+
+        if x == "0"
+        	return x
+        else 
+            x.insert(-3, ".")
+        end
+
+        #puts " amount is #{amt} pennies, or #{x}"
+    end
+
 
 end
 
