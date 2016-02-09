@@ -17,12 +17,30 @@ class Currencies
     	end
     end
 
+    def dividedby(divisor)
+    	if divisor.class == Fixnum || abbreviation == divisor.abbreviation
+    	    self.class.new(@amt / divisor.to_i)
+    	else
+    		x = Bank.new.convert_money(self, divisor)
+    	    self.class.new(@amt / x.to_i)
+    	end
+    end
+
     def plus(other)
-        if abbreviation == other.abbreviation
+        if other.class == Fixnum || abbreviation == other.abbreviation
     	    self.class.new(@amt + other.to_i)
     	else
     		x = Bank.new.convert_money(self, other)
     		self.class.new(@amt + x.to_i)
+    	end
+    end
+
+    def minus(other)
+        if other.class == Fixnum || abbreviation == other.abbreviation
+    	    self.class.new(@amt - other.to_i)
+    	else
+    		x = Bank.new.convert_money(self, other)
+    		self.class.new(@amt - x.to_i)
     	end
     end
 

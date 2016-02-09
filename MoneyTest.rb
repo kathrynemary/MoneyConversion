@@ -60,9 +60,33 @@ class Money < Minitest::Test
 		assert_equal x.plus(x), y
 	end
 
+	def test_four_dollars_divided_by_two_is_two_dollars
+		x = USADollars.new(4)
+		y = USADollars.new(2)
+		assert_equal x.dividedby(2), y
+	end
+
+	def test_multiple_operations_work
+		x = SwissFrancs.new(10)
+		y = SwissFrancs.new(16)
+		assert_equal x.dividedby(2).plus(3), y.minus(8)
+	end
+
 end
 
 class Banking < Minitest::Test
+
+	def test_multiple_operations_work
+		x = SwissFrancs.new(10)
+		y = USADollars.new(16)
+		assert_equal x.dividedby(2).plus(3).times(4), y.minus(8).times(2)
+	end
+
+	def test_four_dollars_divided_by_two_is_four_francs
+		x = USADollars.new(4)
+		y = SwissFrancs.new(4)
+		assert_equal x.dividedby(2), y
+	end
 
 	def test_converts_correctly_to_francs
 		x = Bank.new.dollars_to_francs(5)
@@ -89,6 +113,21 @@ class Banking < Minitest::Test
 		assert_equal x.plus(y), z
 	end
 
+	def test_five_dollars_minus_ten_francs_is_zero_dollars
+		x = USADollars.new(5)
+		y = SwissFrancs.new(10)
+		z = USADollars.new(0)
+		assert_equal x.minus(y), z
+	end
+
+
+	def test_ten_francs_minus_five_dollars_is_zero_francs
+		x = USADollars.new(5)
+		y = SwissFrancs.new(10)
+		z = SwissFrancs.new(0)
+		assert_equal y.minus(x), z
+	end
+
 	def test_four_francs_is_not_four_dollars
 		x = USADollars.new(4)
 		y = SwissFrancs.new(4)
@@ -111,10 +150,5 @@ class Banking < Minitest::Test
 
 end
 
-#money rounding?
 #make it work with noninteger dollars
-#hashCode (??)
-#equal null
-#equal object (??)
-#divide, subtract
-
+#reorder tests because they're driving me nuts
