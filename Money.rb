@@ -1,11 +1,64 @@
 class Currencies
 
 	def initialize(amt)
-		@amt = amt
+		if amt.class == Fixnum
+		    @amt = amt
+	    elsif amt.class == Float
+	    	amt = pennies(amt)
+	    	@amt = amt
+	    	self.flag
+
+	    end
+	end
+
+	def flag
+		puts "I have flagged this test on #{@amt}."
+		"Penny"
+	end
+
+	def pennies(number)
+		number *= 100
+	    number.to_i
 	end
 
     def to_i
     	@amt.to_i
+    end
+
+   	def ==(other)
+		if abbreviation == other.abbreviation
+			@amt == other.to_i
+		elsif abbreviation == "$" && other.abbreviation == "CHF"
+			(@amt * 2) == other.to_i
+		elsif abbreviation == "CHF" && other.abbreviation == "$"
+			(@amt / 2) == other.to_i
+		end
+
+		if self.flag
+			puts "This amount is in pennies!"
+		end
+	end
+
+    def plus(other)
+        if other.class == Float
+        	other *= 100
+        	x = @amt + other.to_i
+    		self.class.new(x / 100)
+        elsif other.class == Fixnum || abbreviation == other.abbreviation
+    	    self.class.new(@amt + other.to_i)
+    	else
+    		x = Bank.new.convert_money(self, other)
+    		self.class.new(@amt + x.to_i)
+    	end
+    end
+
+    def minus(other)
+        if other.class == Fixnum || abbreviation == other.abbreviation
+    	    self.class.new(@amt - other.to_i)
+    	else
+    		x = Bank.new.convert_money(self, other)
+    		self.class.new(@amt - x.to_i)
+    	end
     end
 
     def times(multiplier)
@@ -26,33 +79,6 @@ class Currencies
     	end
     end
 
-    def plus(other)
-        if other.class == Fixnum || abbreviation == other.abbreviation
-    	    self.class.new(@amt + other.to_i)
-    	else
-    		x = Bank.new.convert_money(self, other)
-    		self.class.new(@amt + x.to_i)
-    	end
-    end
-
-    def minus(other)
-        if other.class == Fixnum || abbreviation == other.abbreviation
-    	    self.class.new(@amt - other.to_i)
-    	else
-    		x = Bank.new.convert_money(self, other)
-    		self.class.new(@amt - x.to_i)
-    	end
-    end
-
-	def ==(other)
-		if abbreviation == other.abbreviation
-			@amt == other.to_i
-		elsif abbreviation == "$" && other.abbreviation == "CHF"
-			(@amt * 2) == other.to_i
-		elsif abbreviation == "CHF" && other.abbreviation == "$"
-			(@amt / 2) == other.to_i
-		end
-	end
 end
 
 class USADollars < Currencies
