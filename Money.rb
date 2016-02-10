@@ -26,15 +26,12 @@ class Currencies
 
     def plus(other)
         if other.class == Fixnum || other.class == Float
-        	#puts "I am adding #{other}, which is #{other * 100} pennies!"
         	other *= 100
     		self.class.new((@amt + other) / 100 )
-    		#puts "Now I have #{((@amt + other) / 100 )} pennies!"
         elsif abbreviation == other.abbreviation
     	    self.class.new((@amt + other.to_i) / 100)
     	else
     		x = Bank.new.convert_money(self, other)
-    		#puts "add #{@amt} and #{x.to_i} together."
     		y = x.to_i / 100
     		self.class.new((@amt + y) / 100)
     	end
@@ -48,15 +45,12 @@ class Currencies
     	    self.class.new(@amt - other.to_i)
     	else
     		x = Bank.new.convert_money(self, other)
-    		#puts "subtract #{x.to_i / 100} from #{@amt}."
     		y = x.to_i / 100
     		self.class.new((@amt - y) / 100)
     	end
     end
 
     def times(multiplier)
-    	#puts "multiply #{@amt} times #{multiplier.to_i}, which has a class of #{multiplier.class}."
-    	#puts "#{multiplier.class} is the class of the multiplier and #{multiplier.to_i} is the amount, times #{@amt}."
     	if multiplier.class == Fixnum || multiplier.class == Float
     		x = multiplier * 100
     		self.class.new((@amt * x) / 10000)
@@ -113,7 +107,6 @@ class Bank
 		y = (x.to_i / 2)
 		z = USADollars.new(y)
 		return z
-		#puts "Now I have #{y} dollars of #{}"
 	end
 
 
@@ -129,9 +122,7 @@ class Bank
             x.insert(-3, ".")
         end
 
-        #puts " amount is #{amt} pennies, or #{x}"
     end
-
 
 end
 
