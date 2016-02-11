@@ -90,6 +90,18 @@ class Money < Minitest::Test
 		assert_equal x.plus(x), y
 	end
 
+	def test_five_plus_five_riyals_is_ten
+		x = Riyals.new(5)
+		y = Riyals.new(10)
+		assert_equal x.plus(x), y
+	end
+
+	def test_4_riyals_plus_3
+		x = Riyals.new(4)
+		y = Riyals.new(7)
+		assert_equal x.plus(3), y
+	end
+
 	def test_four_dollars_divided_by_two_is_two_dollars
 		x = USADollars.new(4)
 		y = USADollars.new(2)
@@ -101,6 +113,12 @@ class Money < Minitest::Test
 		y = SwissFrancs.new(16)
 		assert_equal x.dividedby(2).plus(3), y.minus(8)
 	end
+
+	def test_five_pounds_minus_one
+		x = Pounds.new(5)
+		y = Pounds.new(4)
+		assert_equal x.minus(1), y
+  end
 
 end
 
@@ -189,6 +207,21 @@ class Banking < Minitest::Test
 		assert_equal x.dividedby(2).plus(3).times(4), y.minus(8).times(2)
 	end
 
-end
+	def test_3_riyals_is_80_cents
+    x = Riyals.new(3)
+		y = USADollars.new(0.8)
+		assert_equal x, y
+	end
 
-#add 2 more types of currency.
+	def test_three_riyals_is_correct_francs
+		x = Riyals.new(3)
+		y = SwissFrancs.new(1.60)
+		assert_equal x, y
+	end
+
+	def test_two_times_two_dollars_to_pounds
+    x = USADollars.new(2)
+		y = Pounds.new(6032)
+		assert_equal x.times(2), y
+	end
+end
