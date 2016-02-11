@@ -13,48 +13,43 @@ class Currencies
 	end
 
  	def ==(other)
-
 		a = Bank.new.pennies_to_dollars(@amt)
 		b = Bank.new.pennies_to_dollars(other.to_i)
-
 	  (@amt.to_i / self.ratio) == (other.to_i / other.ratio)
-
 	end
 
   def plus(other)
-		if other.class == Fixnum || other.class == Float
-			other *= 100
-			self.class.new((@amt + other) / 100 )
-    else
+		if other.kind_of? Currencies
 			x = (self.to_i / self.ratio) + (other.to_i / other.ratio)
 			Currencies.new(x / 100)
+	  else
+			other *= 100
+			self.class.new((@amt + other) / 100 )
   	end
   end
 
   def minus(other)
-      if other.class == Fixnum || other.class == Float
-      	other *= 100
-      	self.class.new((@amt - other) / 100)
-  	else
+		if other.kind_of? Currencies
   		Currencies.new(((self.to_i / self.ratio) - (other.to_i / other.ratio)) / 100)
-  	end
+    else
+			self.class.new((@amt - (other * 100)) / 100)
+		end
   end
 
   def times(multiplier)
-  	if multiplier.class == Fixnum || multiplier.class == Float
-  		self.class.new((@amt * multiplier) / 100)
-  	else
+  	if multiplier.kind_of? Currencies
   	  Currencies.new((self.to_i / self.ratio) * (multiplier.to_i / multiplier.ratio) / 10000)
-  	end
+  	else
+			self.class.new((@amt * multiplier) / 100)
+		end
   end
 
   def dividedby(divisor)
-  	if divisor.class == Fixnum || divisor.class == Float
-  		divisor *= 100
-  		self.class.new(@amt / divisor)
-  	else
+  	if divisor.kind_of? Currencies
   	  Currencies.new((self.to_i / self.ratio) / (divisor.to_i / divisor.ratio))
-  	end
+    else
+			self.class.new(@amt / (divisor * 100))
+		end
   end
 
 end
@@ -95,13 +90,11 @@ class Bank
 		amount.to_i * amount.ratio
 	end
 
-
 	def pennies_to_dollars(amt)
 		x = amt.to_s
     if x.include?(".")
     	x.sub!(/\.\d*/, '')
     end
-
     if x == "0"
     	return x
     else
