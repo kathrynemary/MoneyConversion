@@ -35,24 +35,16 @@ class Currencies
       if other.class == Fixnum || other.class == Float
       	other *= 100
       	self.class.new((@amt - other) / 100)
-      elsif abbreviation == other.abbreviation
-  	    self.class.new(@amt - other.to_i)
   	else
-  		x = Bank.new.convert_money(self, other)
-  		y = x.to_i / 100
-  		self.class.new((@amt - y) / 100)
+  		Currencies.new(((self.to_i / self.ratio) - (other.to_i / other.ratio)) / 100)
   	end
   end
 
   def times(multiplier)
   	if multiplier.class == Fixnum || multiplier.class == Float
-  		x = multiplier * 100
-  		self.class.new((@amt * x) / 10000)
-  	elsif abbreviation == multiplier.abbreviation
-  	    self.class.new(@amt * multiplier.to_i)
+  		self.class.new((@amt * multiplier) / 100)
   	else
-  		x = Bank.new.convert_money(self, multiplier)
-  	    self.class.new((@amt * x.to_i) / 1000000)
+  	  Currencies.new((self.to_i / self.ratio) * (multiplier.to_i / multiplier.ratio) / 10000)
   	end
   end
 
@@ -60,11 +52,8 @@ class Currencies
   	if divisor.class == Fixnum || divisor.class == Float
   		divisor *= 100
   		self.class.new(@amt / divisor)
-  	elsif abbreviation == divisor.abbreviation
-  	    self.class.new(@amt / divisor.to_i)
   	else
-  		x = Bank.new.convert_money(self, divisor)
-  	    self.class.new(@amt / x.to_i)
+  	  Currencies.new((self.to_i / self.ratio) / (divisor.to_i / divisor.ratio))
   	end
   end
 
@@ -106,36 +95,6 @@ class Bank
 		amount.to_i * amount.ratio
 	end
 
-  def convert_money(amt, second)
-  	if amt.abbreviation == "JOD"
-			if second.abbreviation == "$"
-		  	dollars_to_dinars(amt)
-		  elsif second.abbreviation == "CHF"
-        francs_to_dollars(second)
-				dollars_to_dinars(second)
-			end
-		elsif amt.abbreviation == "CHF" && second.abbreviation == "$"
-  		dollars_to_francs(second)
-  	elsif amt.abbreviation == "$" && second.abbreviation == "CHF"
-  		francs_to_dollars(second)
-  	end
-  end
-
-	def dollars_to_francs(x)
-		y = 2 * x.to_i
-		SwissFrancs.new(y)
-	end
-
-	def francs_to_dollars(x)
-		y = (x.to_i / 2)
-		z = USADollars.new(y)
-		return z
-	end
-
-	def dollars_to_dinars(x)
-		y = x * 0.709
-		Dinar.new(y)
-	end
 
 	def pennies_to_dollars(amt)
 		x = amt.to_s
