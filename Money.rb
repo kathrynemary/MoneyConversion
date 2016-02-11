@@ -19,9 +19,15 @@ class Currencies
 			(@amt * 2) == other.to_i
 		elsif abbreviation == "CHF" && other.abbreviation == "$"
 			(@amt / 2) == other.to_i
+		elsif abbreviation == "JOD"
+			if other.abbreviation == "$"
+			  (other.to_i * 0.709) == @amt
+			elsif other.abbreviation == "CHF"
+				((other.to_i * 0.709) / 2) == @amt
+			end
 		end
 
-		
+
 	end
 
     def plus(other)
@@ -88,10 +94,23 @@ class SwissFrancs < Currencies
 	end
 end
 
+class Dinar < Currencies
+	def abbreviation
+		"JOD"
+	end
+end
+
 class Bank
 
-    def convert_money(amt, second)
-    	if amt.abbreviation == "CHF" && second.abbreviation == "$"
+    def convert_money(amt, second) #make this betterrrrr
+    	if amt.abbreviation == "JOD"
+				if second.abbreviation == "$"
+			  	dollars_to_dinars(amt)
+			  elsif second.abbreviation == "CHF"
+          francs_to_dollars(second)
+					dollars_to_dinars(second)
+				end
+			elsif amt.abbreviation == "CHF" && second.abbreviation == "$"
     		dollars_to_francs(second)
     	elsif amt.abbreviation == "$" && second.abbreviation == "CHF"
     		francs_to_dollars(second)
@@ -109,6 +128,12 @@ class Bank
 		return z
 	end
 
+	def dollars_to_dinars(x)
+		y = x * 0.709
+		Dinar.new(y)
+
+	end
+
 
 	def pennies_to_dollars(amt)
 		x = amt.to_s
@@ -118,14 +143,10 @@ class Bank
 
         if x == "0"
         	return x
-        else 
+        else
             x.insert(-3, ".")
         end
 
     end
 
 end
-
-
-
-

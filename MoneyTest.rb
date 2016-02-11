@@ -44,6 +44,12 @@ class Money < Minitest::Test
 		assert_equal x.times(2), y
 	end
 
+  def test_one_dinar_times_two_is_two
+    x = Dinar.new(1)
+    y = Dinar.new(2)
+    assert_equal x.times(2), y
+  end
+
 	def test_five_times_three_is_fifteen
 		x = USADollars.new(5).times(3)
 		y = USADollars.new(15)
@@ -105,6 +111,18 @@ class Banking < Minitest::Test
 		y = SwissFrancs.new(10)
 		assert_equal x, y
 	end
+
+  def test_dinars_convert_to_dollars
+    x = USADollars.new(10)
+    y = Dinar.new(7.09)
+    assert_equal y, x
+  end
+
+  def test_dinars_convert_to_francs
+    x = Dinar.new(7.09)
+    y = SwissFrancs.new(20)
+    assert_equal x, y
+  end
 
 	def test_ten_francs_is_five_dollars
 		x = USADollars.new(5)
@@ -172,3 +190,8 @@ class Banking < Minitest::Test
 	end
 
 end
+
+
+#if dinars are type y, not x
+#refactor == method, bank class
+#add 2 more types of currency.
