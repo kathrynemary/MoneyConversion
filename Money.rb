@@ -8,50 +8,26 @@ class Currencies
   	@amt.to_i
   end
 
+	def ratio
+		1
+	end
+
  	def ==(other)
 
 		a = Bank.new.pennies_to_dollars(@amt)
 		b = Bank.new.pennies_to_dollars(other.to_i)
 
-		if abbreviation == other.abbreviation
-			self.to_i == other.to_i
+	  (@amt.to_i / self.ratio) == (other.to_i / other.ratio)
 
-
-		else
-			(@amt.to_i / self.ratio).to_i == (other.to_i / other.ratio).to_i
-			# puts "\n#{@amt.to_i} * #{self.ratio} #{self.abbreviation} == #{other.to_i} * #{other.ratio} #{other.abbreviation}"
-      # puts (@amt.to_i / self.ratio)
-			# puts (other.to_i / other.ratio)
-    end
-
-
-		# elsif abbreviation == "$" && other.abbreviation == "CHF"
-		# 	(@amt * 2) == other.to_i
-		# elsif abbreviation == "CHF"
-		# 	if other.abbreviation == "$"
-		# 	  (@amt / 2) == other.to_i
-		# 	elsif other.abbreviation == "JOD"
-		# 		(@amt / 2) * 0.709 == other.to_i
-		#
-		# 	end
-		# elsif abbreviation == "JOD"
-		# 	if other.abbreviation == "$"
-		# 	  (other.to_i * 0.709) == @amt
-		# 	elsif other.abbreviation == "CHF"
-		# 		((other.to_i * 0.709) / 2) == @amt
-		# 	end
 	end
 
   def plus(other)
-      if other.class == Fixnum || other.class == Float
-      	other *= 100
-  		self.class.new((@amt + other) / 100 )
-      elsif abbreviation == other.abbreviation
-  	    self.class.new((@amt + other.to_i) / 100)
-  	else
-  		x = Bank.new.convert_money(self, other)
-  		y = x.to_i / 100
-  		self.class.new((@amt + y) / 100)
+		if other.class == Fixnum || other.class == Float
+			other *= 100
+			self.class.new((@amt + other) / 100 )
+    else
+			x = (self.to_i / self.ratio) + (other.to_i / other.ratio)
+			Currencies.new(x / 100)
   	end
   end
 
