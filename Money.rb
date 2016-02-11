@@ -10,49 +10,49 @@ class Currencies
 
  	def ==(other)
 
- 		a = Bank.new.pennies_to_dollars(@amt)
- 		b = Bank.new.pennies_to_dollars(other.to_i)
+		a = Bank.new.pennies_to_dollars(@amt)
+		b = Bank.new.pennies_to_dollars(other.to_i)
 
 		if abbreviation == other.abbreviation
-			@amt == other.to_i
-		elsif abbreviation == "$"
-			if other.abbreviation == "CHF"
-				(@amt * 2) == other.to_i
-			elsif other.abbreviation == "JOD"
-				(other.to_i / 0.709) == @amt
-			end
-		elsif abbreviation == "CHF"
-			if other.abbreviation == "$"
-			  (@amt / 2) == other.to_i
-			elsif other.abbreviation == "JOD"
-				(other.to_i / 0.709) * 2 == @amt
-			end
-		elsif abbreviation == "JOD"
-			if other.abbreviation == "$"
-			  (other.to_i * 0.709) == @amt
-			elsif other.abbreviation == "CHF"
-				((other.to_i * 0.709) / 2) == @amt
-			end
-		end
-  end
+			self.to_i == other.to_i
+
+
+		else
+			(@amt.to_i / self.ratio).to_i == (other.to_i / other.ratio).to_i
+			# puts "\n#{@amt.to_i} * #{self.ratio} #{self.abbreviation} == #{other.to_i} * #{other.ratio} #{other.abbreviation}"
+      # puts (@amt.to_i / self.ratio)
+			# puts (other.to_i / other.ratio)
+    end
+
+
+		# elsif abbreviation == "$" && other.abbreviation == "CHF"
+		# 	(@amt * 2) == other.to_i
+		# elsif abbreviation == "CHF"
+		# 	if other.abbreviation == "$"
+		# 	  (@amt / 2) == other.to_i
+		# 	elsif other.abbreviation == "JOD"
+		# 		(@amt / 2) * 0.709 == other.to_i
+		#
+		# 	end
+		# elsif abbreviation == "JOD"
+		# 	if other.abbreviation == "$"
+		# 	  (other.to_i * 0.709) == @amt
+		# 	elsif other.abbreviation == "CHF"
+		# 		((other.to_i * 0.709) / 2) == @amt
+		# 	end
+	end
 
   def plus(other)
-    if other.class == Fixnum || other.class == Float
-      other *= 100
+      if other.class == Fixnum || other.class == Float
+      	other *= 100
   		self.class.new((@amt + other) / 100 )
-    elsif abbreviation == other.abbreviation
+      elsif abbreviation == other.abbreviation
   	    self.class.new((@amt + other.to_i) / 100)
   	else
   		x = Bank.new.convert_money(self, other)
-			puts "#{self.to_i} #{x.abbreviation} plus #{x.to_i}"
-			if abbreviation == other.abbreviation
-			  self.plus(x)
-			else
-				puts "they still don't match"
-				x = Bank.new.convert_money(self, x)
-
-			end
-		end
+  		y = x.to_i / 100
+  		self.class.new((@amt + y) / 100)
+  	end
   end
 
   def minus(other)
@@ -63,7 +63,8 @@ class Currencies
   	    self.class.new(@amt - other.to_i)
   	else
   		x = Bank.new.convert_money(self, other)
-  		self.class.new((@amt - x.to_i) / 10000)
+  		y = x.to_i / 100
+  		self.class.new((@amt - y) / 100)
   	end
   end
 
@@ -75,7 +76,7 @@ class Currencies
   	    self.class.new(@amt * multiplier.to_i)
   	else
   		x = Bank.new.convert_money(self, multiplier)
-  	  self.class.new((@amt * x.to_i) / 10000)
+  	    self.class.new((@amt * x.to_i) / 1000000)
   	end
   end
 
@@ -97,11 +98,19 @@ class USADollars < Currencies
 	def abbreviation
 		"$"
 	end
+
+	def ratio
+		1
+	end
 end
 
 class SwissFrancs < Currencies
 	def abbreviation
 		"CHF"
+	end
+
+	def ratio
+		2
 	end
 end
 
@@ -109,50 +118,60 @@ class Dinar < Currencies
 	def abbreviation
 		"JOD"
 	end
+
+	def ratio
+		0.709
+	end
 end
 
 class Bank
 
-  def convert_money(amt, second)
-		if amt.abbreviation == "$"
-			puts "first amt is in dollars"
-			convert_second_amt(amt, second)
-		elsif amt.abbreviation == "JOD"
-			dinars_to_dollars(amt)
-		elsif amt.abbreviation == "CHF"
-			francs_to_dollars(amt)
-		end
+	def convert_to_base(amount)
+		amount.to_i * amount.ratio
 	end
 
-	def convert_second_amt(amt, second)
-		if second.abbreviation == "CHF"
-			francs_to_dollars(second)
-		elsif second.abbreviation == "JOD"
-			dinars_to_dollars(second)
-		end
+  def convert_money(amt, second)
+  	if amt.abbreviation == "JOD"
+			if second.abbreviation == "$"
+		  	dollars_to_dinars(amt)
+		  elsif second.abbreviation == "CHF"
+        francs_to_dollars(second)
+				dollars_to_dinars(second)
+			end
+		elsif amt.abbreviation == "CHF" && second.abbreviation == "$"
+  		dollars_to_francs(second)
+  	elsif amt.abbreviation == "$" && second.abbreviation == "CHF"
+  		francs_to_dollars(second)
+  	end
+  end
+
+	def dollars_to_francs(x)
+		y = 2 * x.to_i
+		SwissFrancs.new(y)
 	end
 
 	def francs_to_dollars(x)
-		z = USADollars.new(x.to_i / 200)
-		puts "i got #{z.to_i} #{z.abbreviation}."
+		y = (x.to_i / 2)
+		z = USADollars.new(y)
 		return z
 	end
 
-	def dinars_to_dollars(x)
-		y = x / 0.709
-		USADollars.new(y)
+	def dollars_to_dinars(x)
+		y = x * 0.709
+		Dinar.new(y)
 	end
 
 	def pennies_to_dollars(amt)
 		x = amt.to_s
     if x.include?(".")
-      x.sub!(/\.\d*/, '')
+    	x.sub!(/\.\d*/, '')
     end
+
     if x == "0"
-      return x
+    	return x
     else
-      x.insert(-3, ".")
+        x.insert(-3, ".")
     end
-  end
+	end
 
 end
