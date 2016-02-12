@@ -13,14 +13,14 @@ class Currencies
 	end
 
  	def ==(other)
-		a = Bank.new.pennies_to_dollars(@amt)
-		b = Bank.new.pennies_to_dollars(other.to_i)
-	  Bank.new.scaled_amount(self).to_i == Bank.new.scaled_amount(other).to_i
+		a = Bank.pennies_to_dollars(@amt)
+		b = Bank.pennies_to_dollars(other.to_i)
+	  Bank.scaled_amount(self).to_i == Bank.scaled_amount(other).to_i
 	end
 
   def plus(other)
 		if other.kind_of? Currencies
-			x = Bank.new.scaled_amount(self) + Bank.new.scaled_amount(other)
+			x = Bank.scaled_amount(self) + Bank.scaled_amount(other)
 			Currencies.new(x / 100)
 	  else
 			other *= 100
@@ -30,7 +30,7 @@ class Currencies
 
   def minus(other)
 		if other.kind_of? Currencies
-  		Currencies.new((Bank.new.scaled_amount(self) - Bank.new.scaled_amount(other)) / 100)
+  		Currencies.new((Bank.scaled_amount(self) - Bank.scaled_amount(other)) / 100)
     else
 			self.class.new((@amt - (other * 100)) / 100)
 		end
@@ -38,7 +38,7 @@ class Currencies
 
   def times(multiplier)
   	if multiplier.kind_of? Currencies
-  	  Currencies.new(Bank.new.scaled_amount(self) * Bank.new.scaled_amount(multiplier) / 10000)
+  	  Currencies.new(Bank.scaled_amount(self) * Bank.scaled_amount(multiplier) / 10000)
   	else
 			self.class.new((@amt * multiplier) / 100)
 		end
@@ -46,7 +46,7 @@ class Currencies
 
   def dividedby(divisor)
   	if divisor.kind_of? Currencies
-  	  Currencies.new(Bank.new.scaled_amount(self) / Bank.new.scaled_amount(divisor))
+  	  Currencies.new(Bank.scaled_amount(self) / Bank.scaled_amount(divisor))
     else
 			self.class.new(@amt / (divisor * 100))
 		end
@@ -105,12 +105,11 @@ class Pounds < Currencies
 end
 
 class Bank
-
-	def convert_to_base(amount)
+	def self.convert_to_base(amount)
 		amount.to_i * amount.ratio
 	end
 
-	def pennies_to_dollars(amt)
+	def self.pennies_to_dollars(amt)
 		x = amt.to_s
     if x.include?(".")
     	x.sub!(/\.\d*/, '')
@@ -122,8 +121,7 @@ class Bank
     end
 	end
 
-  def scaled_amount(x)
+  def self.scaled_amount(x)
     (x.to_i / x.ratio)
 	end
-
 end
